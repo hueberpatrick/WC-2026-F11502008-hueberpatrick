@@ -45,6 +45,18 @@ Complete the table:
 
 Yes, all traffic directions match the scenario descriptions. In start -> test_start -> reverse, Scen A has the Value 1 (downlink), Scenarios B and C have the value 0 (uplink).
 
+Scenario A:
+
+![Scenario A: reverse value is 1](pictures/Task1_a.png)
+
+Scenario B:
+
+![Scenario B: reverse value is 1](pictures/Task1_b.png)
+
+Scenario C:
+
+![Scenario C: reverse value is 1](pictures/Task1_c.png)
+
 ## 4. Task 2 — Compare Throughput
 
 In each JSON file, find:
@@ -59,13 +71,14 @@ Convert the value to Mbps:
 Throughput (Mbps) = bits_per_second ÷ 1,000,000
 ```
 
+
 Complete the table:
 
 | Scenario | Direction | Throughput (Mbps) |
 | --- | --- | ---: |
-| A | Downlink |  |
-| B | Uplink |  |
-| C | Uplink |  |
+| A | Downlink | 90.654 |
+| B | Uplink | 109.117 |
+| C | Uplink | 124.417 |
 
 Calculate how much C improves over B:
 
@@ -76,9 +89,20 @@ Improvement (%) = (C - B) ÷ B × 100
 Answer:
 
 1. What is the downlink throughput in Scenario A?
+
+Scenario A has a downlink throughput of 90.65 Mbps
+
 2. What is the uplink throughput in Scenario B?
+
+Scenario B has an uplink throughput of 109.12 Mbps
+
 3. Is the uplink throughput higher in B or C?
+
+Uplink throughput is higher in Scenario C, at 124.42 Mbps
+
 4. By approximately what percentage does C improve over B?
+
+Scenario C improves uplink throughput by approximately 14.02% compared with B
 
 > Use the JSON `bits_per_second` value. Do not recalculate throughput using the other time fields.
 
@@ -95,14 +119,23 @@ Complete the table:
 
 | Scenario | Throughput (Mbps) | Packet loss (%) | Jitter (ms) |
 | --- | ---: | ---: | ---: |
-| B |  |  |  |
-| C |  |  |  |
+| B | 109.117 | 0,236 | 0,116 |
+| C | 124.417 | 2.134 | 0.162 |
+
 
 Answer:
 
 1. Does C have higher uplink throughput than B?
+
+Yes, Scenario C has higher uplink throughput than B: 124.42 Mbps compared with 109.12 Mbps
+
 2. Does C have lower packet loss than B?
+
+No, C has higher packet loss: 2.134% compared with 0.236%
+
 3. What is the trade-off when changing from B to C?
+
+Scenario C has higher throughput, but higher packet loss than Scenario B. Therefore, the balanced TDD setting improves uplink throughput, but it may reduce delivery reliability
 
 A simple answer format is:
 
@@ -114,9 +147,9 @@ Complete the table using the scenario description and your throughput results:
 
 | Scenario | TDD setting | Traffic direction | Do they match? |
 | --- | --- | --- | --- |
-| A | DL-heavy | Downlink |  |
-| B | DL-heavy | Uplink |  |
-| C | Balanced | Uplink |  |
+| A | DL-heavy | Downlink | Yes |
+| B | DL-heavy | Uplink | Poor match: limited UL opportunities |
+| C | Balanced | Uplink | More suitable than B: more UL opportunities |
 
 Use these ideas:
 
@@ -127,6 +160,8 @@ Use these ideas:
 - A balanced setting gives uplink traffic more opportunities than a DL-heavy setting.
 
 **Question:** Why might Scenario C achieve better uplink throughput than Scenario B?
+
+Scenario C may achieve higher uplink throughput because the balanced TDD setting provides more uplink slots than the DL-heavy setting in Scenario B. This gives the UE more opportunities to transmit uplink data.
 
 ## 7. Task 5 — Find GTP-U Information
 
