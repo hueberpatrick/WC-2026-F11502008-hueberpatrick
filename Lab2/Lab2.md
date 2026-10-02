@@ -182,12 +182,12 @@ Record the following information from one packet:
 
 | Item | Value |
 | --- | --- |
-| Packet number |  |
-| Outer source IP |  |
-| Outer destination IP |  |
-| Inner source IP |  |
-| Inner destination IP |  |
-| TEID |  |
+| Packet number | 1831 |
+| Outer source IP | 192.168.70.129 |
+| Outer destination IP | 192.168.70.134 |
+| Inner source IP | 10.0.0.6 |
+| Inner destination IP | 192.168.70.134 |
+| TEID | 0x00000011 (17) |
 
 Meaning:
 
@@ -196,6 +196,8 @@ Meaning:
 - **TEID:** identifies the GTP-U tunnel.
 
 Take one screenshot showing the selected packet and these fields.
+
+
 
 > Some GTP packets are echo or control-related packets. Select one that contains an inner IPv4 packet.
 
