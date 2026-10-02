@@ -67,6 +67,8 @@ end → sum → bits_per_second
 
 Convert the value to Mbps:
 
+
+
 ```text
 Throughput (Mbps) = bits_per_second ÷ 1,000,000
 ```
@@ -87,6 +89,9 @@ Improvement (%) = (C - B) ÷ B × 100
 ```
 
 Answer:
+
+Improvement = (124.416749 − 109.117250) / 109.117250 × 100 = 14.02%
+
 
 1. What is the downlink throughput in Scenario A?
 
@@ -186,7 +191,7 @@ Record the following information from one packet:
 | Outer source IP | 192.168.70.129 |
 | Outer destination IP | 192.168.70.134 |
 | Inner source IP | 10.0.0.6 |
-| Inner destination IP | 192.168.70.134 |
+| Inner destination IP | 192.168.70.135 |
 | TEID | 0x00000011 (17) |
 
 Meaning:
@@ -197,7 +202,9 @@ Meaning:
 
 Take one screenshot showing the selected packet and these fields.
 
-
+![Selected Packet:](pictures/Task5_1.png)
+![Field 1 and 2:](pictures/Task5_2.png)
+![Field 3 and 4:](pictures/Task5_3.png)
 
 > Some GTP packets are echo or control-related packets. Select one that contains an inner IPv4 packet.
 
@@ -215,11 +222,13 @@ Record the number of displayed packets:
 
 | Scenario | Displayed TCP retransmissions |
 | --- | ---: |
-| A |  |
-| B |  |
-| C |  |
+| A | 14 |
+| B | 12 |
+| C | 12 |
 
 **Question:** Do these TCP retransmissions directly represent lost UDP performance packets?
+
+No, these TCP retransmissions do not directly represent lost UDP performance packets. They belong to the TCP control connection, while the throughput test uses UDP. Since the captures may contain duplicate packets from merged capture sources, the counts should be treated only as Wireshark observations.
 
 The answer should be **no**. They belong to the TCP control connection, while the throughput test uses UDP. The captures may also contain duplicate copies because multiple capture sources were merged, so treat the number only as a Wireshark observation.
 
@@ -237,7 +246,7 @@ Select one packet and record its ACK RTT:
 
 | Scenario | Example TCP ACK RTT |
 | --- | --- |
-| A, B, or C |  |
+| C | 315us |
 
 This value is the RTT of the TCP control connection. It is not the RTT of the UDP data packets.
 
@@ -253,7 +262,7 @@ Record one example:
 
 | Flow | Packet numbers | Time interval |
 | --- | --- | --- |
-|  |  |  |
+| Scenario C, TCP stream 0 | 1430-1431 | 16us |
 
 Packet interval means the time between two packets seen at the capture point. It is not the same as RTT.
 
@@ -262,12 +271,32 @@ Packet interval means the time between two packets seen at the capture point. It
 Answer each question in two or three sentences:
 
 1. Does Scenario A use a TDD setting that matches its traffic direction?
+
+Yes, Scenario A uses a DL-heavy TDD setting for downlink traffic. More downlink slots provide more opportunities for downlink transmission.
+
 2. Why is Scenario B expected to have limited uplink resources?
+
+Scenario B uses a DL-heavy setting, which allocates more slots to downlink and fewer to uplink. Therefore, the UE has fewer opportunities to transmit uplink data.
+
 3. How much does uplink throughput change from B to C?
+
+Uplink throughput increases from 109.12 Mbps in B to 124.42 Mbps in C. This is an increase of approximately 15.30 Mbps, or 14.02%.
+
 4. What negative result is visible in C?
+
+Packet loss increases from approximately 0.236% in B to 2.134% in C. Jitter also increases from 0.116 ms to 0.162 ms.
+
 5. Why can increasing UL slots improve uplink throughput?
+
+More uplink slots give the UE more transmission opportunities. This can allow more uplink data to be transferred per second.
+
 6. Is adding more UL slots always the best solution? Explain using throughput and packet loss.
+
+No, throughput and packet loss must both be considered when evaluating a TDD setting. In these tests, C achieves higher throughput but also higher packet loss, so it does not improve every performance metric.
+
 7. Suggest one simple follow-up test that could improve throughput without producing too much packet loss.
+
+Repeat Scenario C with a slightly lower offered UDP sending rate while keeping the balanced TDD setting unchanged. Compare the measured throughput and packet loss to find a rate that maintains a throughput advantage over B with less loss.
 
 ## 11. Submission Checklist
 
