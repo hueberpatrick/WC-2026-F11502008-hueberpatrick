@@ -26,7 +26,8 @@ Use the *OAI v2.4.0 Build Guide* to prepare the environment before class.
 
 | Component | Configuration |
 |---|---|
-| Ubuntu | 24.04 (reference setup); 26.04 (local VMware environment) |
+| Operating System | Ubuntu 26.04.1 LTS |
+| Virtualization | VMware Workstation Pro |
 | OAI RAN | v2.4.0 |
 | 5G Core | OAI CN5G |
 | gNB | nr-softmodem |
@@ -38,7 +39,12 @@ Use the *OAI v2.4.0 Build Guide* to prepare the environment before class.
 | UE IMSI | 001010000000001 |
 | External DN | 192.168.70.135 |
 
-The reference experiment uses one Ubuntu machine without physical RF hardware. The local Ubuntu 26.04 VMware setup did not reach the OAI deployment stage.
+Take screenshots showing the gNB and UE successfully connected.
+
+
+```markdown
+![CN5G Initialization](images/task1-cn5g.png)
+```
 
 ## 3. Task 1 — Deploy and Verify the Complete 5G SA Network
 
@@ -119,14 +125,36 @@ The process IDs are taken from one reference implementation and are specific to 
 
 | Item | Observed Value |
 |---|---|
-| gNB process ID | 2963296 |
-| nrUE process ID | 2963995 |
+| gNB process ID | 89302 |
+| Additional gNB process ID | 89307 |
+| nrUE process ID | 92061 |
+| Additional nrUE process ID | 92062 |
 | RFsimulator transport protocol | TCP |
 | RFsimulator port | 4043 |
-| TCP connection state | ESTAB (ESTABLISHED) |
-| Connected processes | `nr-softmodem` (PID 2963296), `nr-uesoftmodem` (PID 2963995) |
+| TCP connection state | ESTAB |
+| nrUE IP address | 127.0.0.1 |
+| nrUE source port | 40728 |
+| gNB IP address | 127.0.0.1 |
+| gNB destination port | 4043 |
 
-The RFsimulator uses a local TCP connection on port 4043. The gNB acts as the server while the nrUE connects as a client. This communication method replaces the physical radio channel with digital IQ sample exchange.
+The TCP socket inspection showed:
+
+```text
+ESTAB  127.0.0.1:40728  127.0.0.1:4043
+
+nr-uesoftmodem, pid=92061
+
+ESTAB  [::ffff:127.0.0.1]:4043  [::ffff:127.0.0.1]:40728
+
+nr-softmodem, pid=89302
+```
+
+These results confirm that the gNB and nrUE were successfully communicating over the RFsimulator TCP connection.
+
+
+```markdown
+![RFsimulator TCP Connection](images/task2-rfsim-tcp.png)
+```
 
 ### Questions
 
