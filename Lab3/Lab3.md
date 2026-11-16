@@ -1,8 +1,6 @@
 
 # Lab 3: Deploying a 5G Standalone Network Using OpenAirInterface
 
-> **Scope:** Technical analysis of Lab 3 using the assignment and measurements from a reference implementation. The local VMware installation was not completed, so the experimental tables describe reference results rather than independently collected measurements. Screenshots are not included.
-
 ## 1. Goal
 
 In the previous labs, you analyzed 5G signaling messages and network performance using provided captures and measurements.
