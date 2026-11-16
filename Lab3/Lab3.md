@@ -42,9 +42,8 @@ Use the *OAI v2.4.0 Build Guide* to prepare the environment before class.
 Take screenshots showing the gNB and UE successfully connected.
 
 
-```markdown
 ![CN5G Initialization](images/task1-cn5g.png)
-```
+
 
 ## 3. Task 1 — Deploy and Verify the Complete 5G SA Network
 
@@ -75,6 +74,8 @@ The reference logs indicate that the CN5G functions, gNB, and nrUE completed the
 After authentication and registration, a PDU Session was established and an IPv4 address was assigned to the UE.
 
 Take screenshots showing the gNB and UE successfully connected.
+
+![gNB and nrUE Running](images/task1-gnb-nrue.png)
 
 ### Questions
 
@@ -152,9 +153,9 @@ nr-softmodem, pid=89302
 These results confirm that the gNB and nrUE were successfully communicating over the RFsimulator TCP connection.
 
 
-```markdown
+
 ![RFsimulator TCP Connection](images/task2-rfsim-tcp.png)
-```
+
 
 ### Questions
 
