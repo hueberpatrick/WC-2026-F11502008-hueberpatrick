@@ -75,7 +75,7 @@ After authentication and registration, a PDU Session was established and an IPv4
 
 Take screenshots showing the gNB and UE successfully connected.
 
-![gNB and nrUE Running](images/task1-gnb-nrue.png)
+![gNB and nrUE Running](images/task1-gnb-nrue.png.png)
 
 ### Questions
 
