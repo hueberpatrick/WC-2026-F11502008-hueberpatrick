@@ -39,8 +39,6 @@ Use the *OAI v2.4.0 Build Guide* to prepare the environment before class.
 | UE IMSI | 001010000000001 |
 | External DN | 192.168.70.135 |
 
-Take screenshots showing the gNB and UE successfully connected.
-
 
 ![CN5G Initialization](images/task1-cn5g.png)
 
