@@ -1069,29 +1069,6 @@ All screenshots, packet numbers, TEIDs and measurements must come from **your ow
 | Kernel packet drops | 0 |
 | Final PCAP | `lab4-f1-final.pcap` |
 
-### Submission file structure
-
-```text
-Lab4/
-├── Lab4.md
-├── lab4-f1-final.pcap
-└── images/
-    ├── task1-configuration.png
-    ├── task2-cn5g.png
-    ├── task2-cu-du-setup.png
-    ├── task2-nrue-success.png
-    ├── task2-ping-success.png
-    ├── task3-tcpdump-final.png
-    ├── task4-f1-setup.png
-    ├── task4-rrc-registration.png
-    ├── task4-ue-context.png
-    ├── task4-ue-context-teids.png
-    ├── task5-gtpu-teids-ul.png
-    ├── task5-gtpu-teids-dl.png
-    ├── task5-gtpu-gpdu.png
-    └── task5-gtpu-count.png
-```
-
 ---
 
 ## 11. Suggested grading rubric
