@@ -1,4 +1,3 @@
-
 # Lab 5: From Initial Access to RRC Connection Setup (Student Guide)
 
 ## 1. Lab Goal
@@ -85,15 +84,7 @@ Record whether UE synchronization succeeded and the PCI value. Explain: after co
 63: Initial sync successful, PCI: 0
 ```
 
-**Synchronization:** Successful.
-
-**PCI:** `0`
-
-After initial synchronization, the UE has established the cell's timing and frequency reference. It can decode the PBCH/MIB and obtain additional broadcast system information, including SIB1.
-
-Synchronization alone does not mean that the UE has established an RRC connection or registered with the 5G Core.
-
-The UE log also confirms `SIB1 decoded` at line 71.
+**Synchronization:** Successful. **PCI:** `0`. After initial synchronization the UE has established the cell's timing/frequency reference and can decode the PBCH/MIB and obtain further broadcast system information such as SIB1. Synchronization alone is not an RRC connection or 5GC registration. The log also confirms `SIB1 decoded` at line 71.
 
 #### Step 2: Find MIB and SIB1 — 8 points
 
@@ -116,47 +107,17 @@ MIB and SIB1 are repeatedly broadcast system-information messages. The UE must o
 
 ![Wireshark MIB and SIB1 overview](images/task1-mib-sib1-overview.png)
 
-*Figure 1: Wireshark with the `nr-rrc` display filter showing repeated MIB and SIB1 packets.*
+*Figure 1: Wireshark `nr-rrc` filter showing repeated MIB and SIB1 packets. Frame numbers 2 (MIB) and 1 (SIB1) were selected for analysis.*
 
 ![Decoded MIB](images/task1-mib.png)
 
-*Figure 2: Decoded MIB in frame 2, showing common subcarrier spacing, SSB subcarrier offset, and cell access information.*
+*Figure 2: Decoded MIB in frame 2, including `subCarrierSpacingCommon: scs30or120`, `ssb-SubcarrierOffset: 0` and `cellBarred: notBarred`.*
 
 ![Decoded SIB1](images/task1-sib1.png)
 
-*Figure 3: Decoded SIB1 in frame 1, including cellSelectionInfo, cellAccessRelatedInfo, servingCellConfigCommon and ue-TimersAndConstants.*
+*Figure 3: Decoded SIB1 in frame 1, including `cellSelectionInfo`, `cellAccessRelatedInfo`, `servingCellConfigCommon`, and `ue-TimersAndConstants`.*
 
-**MIB explanation:**
-
-The Master Information Block (MIB) provides fundamental cell information needed by the UE to continue the initial access procedure.
-
-It includes the common subcarrier spacing and information needed to locate and decode SIB1.
-
-In the selected MIB packet, the following parameters were visible:
-
-| MIB parameter | Observed value |
-|---|---|
-| Frame | 2 |
-| `subCarrierSpacingCommon` | `scs30or120` |
-| `ssb-SubcarrierOffset` | `0` |
-| `dmrs-TypeA-Position` | `pos2` |
-| `cellBarred` | `notBarred` |
-| `intraFreqReselection` | `notAllowed` |
-
-**SIB1 explanation:**
-
-System Information Block 1 (SIB1) provides cell-access and common radio configuration information.
-
-It includes parameters required for cell selection and the Random Access procedure.
-
-The selected SIB1 packet contained:
-
-- `cellSelectionInfo`
-- `cellAccessRelatedInfo`
-- `servingCellConfigCommon`
-- `ue-TimersAndConstants`
-
-The MIB and SIB1 are repeatedly broadcast. Therefore, their order in the recorded PCAP does not necessarily represent the order in which the UE first decoded them.
+**Explanation:** The MIB provides essential parameters for obtaining further system information, including common subcarrier spacing and information necessary for SIB1 acquisition. SIB1 provides cell access, selection, and common serving-cell configuration, including information needed for initiating Random Access. Both are broadcast repeatedly; their order in the saved capture does not have to reflect the UE's first successful reception.
 
 #### Step 3: Find Msg1 PRACH — 8 points
 
@@ -169,8 +130,8 @@ grep -nE 'PRACH' lab5-artifacts/Lab5-ue.log
 Record the Msg1 log line number. From the line that shows the actual PRACH transmission, find:
 
 ```text
-frame.slot = ______
-preambleIndex = ______
+frame.slot = 553.19
+preambleIndex = 16
 ```
 
 Next, return to Wireshark. Clear the display filter, press `Cmd/Ctrl + F`, choose **Packet details** as the search scope, and search for:
@@ -182,29 +143,10 @@ RACH Preamble chosen
 After locating the PRACH event recorded by the gNB tracer, record:
 
 ```text
-RAPID = ______
+RAPID = 16
 ```
 
 This packet is displayed as `MAC-LTE RACH Preamble chosen`; it is the OAI tracer MAC-event format.
-
-**Student result — Task 1 / Step 3**
-
-| Measurement | Observed value |
-|---|---|
-| UE log line for PRACH transmission | **81** |
-| Frame.Slot | **553.19** |
-| Preamble Index | **16** |
-| Wireshark frame | **489** |
-| Wireshark RAPID | **16** |
-| Random Access attempt | **0** |
-
-![PRACH transmission in UE log](images/task1-prach-log.png)
-
-*Figure 4: UE log showing PRACH transmission at frame.slot 553.19 with preambleIndex 16.*
-
-![PRACH preamble chosen in Wireshark](images/task1-prach-wireshark.png)
-
-*Figure 5: Wireshark MAC-LTE tracer event showing RAPID 16 in frame 489.*
 
 Submit one UE-log screenshot and one Wireshark screenshot. Briefly answer:
 
@@ -212,40 +154,38 @@ Submit one UE-log screenshot and one Wireshark screenshot. Briefly answer:
 2. At which `frame.slot` and with which `preambleIndex` does the UE log show transmission?
 3. Does the Wireshark `RAPID` match the UE-log `preambleIndex`? What does this show?
 
+**Student result — Task 1 / Step 3**
+
+| Measurement | Observed value |
+|---|---|
+| UE log line for actual PRACH transmission | **81** |
+| UE `frame.slot` | **553.19** |
+| UE `preambleIndex` | **16** |
+| gNB tracer Wireshark frame | **489** |
+| Wireshark `RAPID` | **16** |
+| Tracer attempt | **0** |
+
+![PRACH transmission in UE log](images/task1-prach-log.png)
+
+*Figure 4: UE log line 81 showing PRACH transmission at frame.slot 553.19 with preambleIndex 16.*
+
+![PRACH preamble chosen in Wireshark](images/task1-prach-wireshark.png)
+
+*Figure 5: MAC-LTE OAI tracer event at Wireshark frame 489, reporting RAPID 16 and attempt 0.*
+
 **Answers — Task 1 / Step 3**
 
-**1. Which Random Access message is this PRACH transmission?**
-
-The PRACH transmission is **Msg1**, the initial Random Access preamble of the four-step contention-based Random Access procedure.
-
-The UE transmits a selected preamble to initiate access to the gNB.
-
-**2. At which frame.slot and with which preambleIndex does the UE log show transmission?**
-
-The UE log shows:
-
-```text
-frame.slot = 553.19
-preambleIndex = 16
-```
-
-These values were recorded in log line 81.
-
-**3. Does the Wireshark RAPID match the UE-log preambleIndex? What does this show?**
-
-Yes.
-
-The UE log reports `preambleIndex = 16`, and the Wireshark tracer reports `RAPID = 16`.
-
-This confirms that the preamble recorded by the gNB tracer matches the preamble selected by the UE.
+1. This PRACH transmission is **Msg1**, the Random Access preamble in the four-step contention-based Random Access procedure.
+2. The UE log records transmission at **frame.slot `553.19`** using **preambleIndex `16`** (line 81).
+3. **Yes.** Wireshark reports **RAPID `16`** in frame 489, matching the UE log's preambleIndex `16`. This correlates the UE's selected preamble with the event recorded by the gNB tracer.
 
 #### Step 4: Find Msg2 RAR in Wireshark — 11 points
 
 Return to Wireshark and clear the display filter. Press `Cmd/Ctrl + F`, choose **Packet details** as the search scope, and search for `RAR` or `Random Access Response`. After locating the packet, record its frame number and find the following values in `MAC-NR RAR`:
 
 ```text
-RAPID = ______
-Temporary C-RNTI = ______
+RAPID = 16
+Temporary C-RNTI = 61982 (0xF21E)
 ```
 
 **Student result — Task 1 / Step 4**
@@ -255,30 +195,15 @@ Temporary C-RNTI = ______
 | Wireshark frame | **490** |
 | Message | Msg2 — MAC-NR RAR |
 | RAPID | **16** |
-| Temporary C-RNTI | **61982 (`0xF21E`)** |
+| Temporary C-RNTI | **61982** (`0xF21E`) |
 | RA-RNTI | 271 |
-| Timing Advance | 0 |
+| Timing Advance (TA) | 0 |
 
 ![Random Access Response](images/task1-rar.png)
 
-*Figure 6: MAC-NR Random Access Response in frame 490, showing RAPID 16 and Temporary C-RNTI 61982.*
+*Figure 6: MAC-NR RAR in frame 490, showing RAPID 16 and Temporary C-RNTI 61982.*
 
-**Explanation:**
-
-Msg2 is the Random Access Response (RAR) transmitted by the gNB.
-
-It responds to the selected PRACH preamble and provides:
-
-- A Random Access Preamble Identifier (RAPID).
-- Timing Advance information.
-- An uplink grant for Msg3.
-- A Temporary C-RNTI.
-
-The RAPID of 16 matches the PRACH preambleIndex identified in Msg1.
-
-The Temporary C-RNTI `61982` is used in the following RRC connection establishment messages.
-
----
+**Explanation:** Msg2 acknowledges the selected PRACH preamble, assigns a Temporary C-RNTI, and provides timing advance and an uplink grant so that the UE can transmit Msg3. RAPID 16 agrees with Msg1.
 
 ### Task 2: Complete Random Access and RRC Connection Setup — 40 points
 
@@ -295,8 +220,8 @@ nr-rrc.rrcSetupRequest_element
 Expand `UL-CCCH-Message → rrcSetupRequest` and find:
 
 ```text
-Frame number = ______
-Context RNTI = ______
+Frame number = 491
+Context RNTI = 61982 (0xF21E)
 ```
 
 Briefly answer:
@@ -308,40 +233,24 @@ Briefly answer:
 
 | Field | Observed value |
 |---|---|
-| Frame Number | **491** |
+| Wireshark frame | **491** |
 | Message | RRCSetupRequest (Msg3) |
-| Context RNTI | **61982 (`0xF21E`)** |
-| Logical channel | UL-CCCH |
-| Establishment Cause | `mo-Signalling` |
-| UE Identity | `randomValue` |
+| Context RNTI | **61982** (`0xF21E`) |
+| Channel | UL-CCCH over MAC-NR UL-SCH |
+| Establishment cause | `mo-Signalling` |
 
-![RRCSetupRequest frame number](images/task2-rrc-setup-request-frame.png)
+![RRCSetupRequest packet number](images/task2-rrc-setup-request-frame.png)
 
-*Figure 7: Wireshark frame 491 containing RRCSetupRequest.*
+*Figure 7: Wireshark frame 491 identified as RRC Setup Request.*
 
 ![RRCSetupRequest details](images/task2-rrc-setup-request.png)
 
-*Figure 8: RRCSetupRequest showing Context RNTI 61982 and establishmentCause mo-Signalling.*
+*Figure 8: RRCSetupRequest details showing Context RNTI 61982 and establishment cause `mo-Signalling`.*
 
 **Answers:**
 
-**1. Does the Context RNTI match the Temporary C-RNTI in the Task 1 / Step 4 RAR? What does this show?**
-
-Yes.
-
-The Context RNTI in the RRCSetupRequest is `61982`, and the Temporary C-RNTI assigned in the RAR is also `61982`.
-
-This demonstrates that the UE uses the temporary identifier assigned during Random Access for its subsequent uplink transmission.
-
-**2. Can you claim that the RRC connection has been established after seeing only RRCSetupRequest? Why or why not?**
-
-No.
-
-RRCSetupRequest is a request from the UE to the gNB.
-
-The gNB must still send RRCSetup, and the UE must subsequently send RRCSetupComplete.
-
-Therefore, observing only RRCSetupRequest does not prove that RRC connection establishment has been completed.
+1. **Yes.** The Context RNTI `61982` matches the Temporary C-RNTI `61982` from the Msg2 RAR. The UE uses the temporary identifier assigned during Random Access.
+2. **No.** RRCSetupRequest only requests an RRC connection. The gNB must respond with RRCSetup, and the UE must subsequently complete the procedure with RRCSetupComplete.
 
 #### Step 2: Find RRCSetup — 10 points
 
@@ -354,9 +263,9 @@ nr-rrc.rrcSetup_element
 Expand `DL-CCCH-Message → rrcSetup` and find:
 
 ```text
-Frame number = ______
-Context RNTI = ______
-rrc-TransactionIdentifier = ______
+Frame number = 492
+Context RNTI = 61982 (0xF21E)
+rrc-TransactionIdentifier = 1
 ```
 
 Check whether `Contention Resolution` also appears in the packet.
@@ -370,35 +279,24 @@ Below the screenshot, briefly answer:
 
 | Field | Observed value |
 |---|---|
-| Frame Number | **492** |
+| Wireshark frame | **492** |
 | Message | RRCSetup (Msg4) |
-| Context RNTI | **61982 (`0xF21E`)** |
-| rrc-TransactionIdentifier | **1** |
-| Contention Resolution | **Present** |
+| Context RNTI | **61982** (`0xF21E`) |
+| `rrc-TransactionIdentifier` | **1** |
+| MAC Contention Resolution | **Present** |
 
-![RRCSetup frame number](images/task2-rrc-setup-frame.png)
+![RRCSetup packet number](images/task2-rrc-setup-frame.png)
 
-*Figure 9: Wireshark frame 492 containing RRCSetup.*
+*Figure 9: Wireshark frame 492 identified as RRC Setup.*
 
-![RRCSetup message details](images/task2-rrc-setup.png)
+![RRCSetup and contention resolution](images/task2-rrc-setup.png)
 
-*Figure 10: RRCSetup with Transaction Identifier 1 and MAC Contention Resolution in the same downlink packet.*
+*Figure 10: RRCSetup with Transaction Identifier 1 and a MAC Contention Resolution subheader in the same downlink packet.*
 
 **Answers:**
 
-**1. Which message is this in four-step Random Access?**
-
-This is **Msg4**, the fourth message of the four-step contention-based Random Access procedure.
-
-It carries the RRCSetup message from the gNB to the UE.
-
-**2. What does it mean that Contention Resolution and RRCSetup appear in the same downlink message?**
-
-The gNB combines the contention-resolution information and RRCSetup in the same downlink transmission.
-
-This allows the UE to determine whether contention resolution was successful while receiving the configuration required for RRC connection establishment.
-
-The MAC layer handles contention resolution, while the RRC layer handles RRCSetup.
+1. This is **Msg4**, the contention-resolution message of four-step Random Access, carrying the RRCSetup message toward the UE.
+2. The gNB combines contention resolution with the RRCSetup downlink transmission. The UE can resolve contention and receive the configuration needed for RRC connection establishment in the same MAC transport block.
 
 #### Step 3: Find RRCSetupComplete — 12 points
 
@@ -418,9 +316,9 @@ RLC-NR → PDCP-NR → NR Radio Resource Control (RRC) protocol
 Expand `message: c1` further and confirm that it contains `rrcSetupComplete`. Record:
 
 ```text
-Frame number = ______
-Context RNTI = ______
-rrc-TransactionIdentifier = ______
+Frame number = 498
+Context RNTI = 61982 (0xF21E)
+rrc-TransactionIdentifier = 1
 ```
 
 Below the screenshot, briefly answer:
@@ -432,38 +330,20 @@ Below the screenshot, briefly answer:
 
 | Field | Observed value |
 |---|---|
-| Frame Number | **498** |
+| Wireshark frame | **498** |
 | Message | RRCSetupComplete |
-| Context RNTI | **61982 (`0xF21E`)** |
-| rrc-TransactionIdentifier | **1** |
-| Transport | MAC-NR UL-SCH |
-| Logical channel | UL-DCCH |
-| RLC | RLC-NR |
-| PDCP | PDCP-NR |
+| Context RNTI | **61982** (`0xF21E`) |
+| `rrc-TransactionIdentifier` | **1** |
+| Uplink stack | MAC-NR UL-SCH → RLC-NR → PDCP-NR → RRC UL-DCCH |
 
-![RRCSetupComplete message details](images/task2-rrc-setup-complete.png)
+![RRCSetupComplete message and fields](images/task2-rrc-setup-complete.png)
 
-*Figure 11: RRCSetupComplete in frame 498, showing the UL-SCH transport, RLC-NR and PDCP-NR layers, Context RNTI 61982, and Transaction Identifier 1.*
+*Figure 11: Wireshark frame 498 showing RRCSetupComplete over MAC-NR UL-SCH, RLC-NR and PDCP-NR, with Context RNTI 61982 and Transaction Identifier 1.*
 
 **Answers:**
 
-**1. Does the Context RNTI still match the Temporary C-RNTI in the RAR?**
-
-Yes.
-
-The Context RNTI in RRCSetupComplete is `61982`, matching the Temporary C-RNTI assigned in the Random Access Response.
-
-This confirms that the RRCSetupComplete message belongs to the same UE context.
-
-**2. Does the rrc-TransactionIdentifier match the RRCSetup in Step 2? What is the purpose of this comparison?**
-
-Yes.
-
-RRCSetup in frame 492 uses Transaction Identifier `1`.
-
-RRCSetupComplete in frame 498 also uses Transaction Identifier `1`.
-
-The matching identifier confirms that RRCSetupComplete corresponds to the correct RRCSetup transaction.
+1. **Yes.** RNTI `61982` is the same as the Temporary C-RNTI reported in Msg2, associating the completion message with the same UE.
+2. **Yes.** Both RRCSetup (frame 492) and RRCSetupComplete (frame 498) use Transaction Identifier **1**. The matching identifier associates the response with the correct RRC transaction.
 
 #### Step 4: Confirm the Final Random Access and RRC Connection Result — 8 points
 
@@ -477,10 +357,10 @@ grep -nE '4-Step RA procedure succeeded|Received NR_RRCSetup|RRCSetupComplete|St
 From the output, record:
 
 ```text
-4-Step RA procedure succeeded: line ______
-Received NR_RRCSetup: line ______
-State = NR_RRC_CONNECTED: line ______
-Generating RRCSetupComplete: line ______
+4-Step RA procedure succeeded: line 87
+Received NR_RRCSetup: line 88
+State = NR_RRC_CONNECTED: line 90
+Generating RRCSetupComplete: line 93
 ```
 
 Submit a screenshot of this log output and briefly answer:
@@ -490,8 +370,6 @@ Submit a screenshot of this log output and briefly answer:
 
 **Student result — Task 2 / Step 4**
 
-The UE log contains the following events:
-
 ```text
 87: 4-Step RA procedure succeeded. CBRA: Contention Resolution is successful.
 88: Received NR_RRCSetup
@@ -499,31 +377,14 @@ The UE log contains the following events:
 93: Generating RRCSetupComplete (bytes33)
 ```
 
-![Successful Random Access and RRC connection](images/task2-rrc-connected-log.png)
+![UE log successful RA and RRC connected](images/task2-rrc-connected-log.png)
 
-*Figure 12: UE log showing successful contention resolution, RRCSetup reception, transition to NR_RRC_CONNECTED, and RRCSetupComplete generation.*
+*Figure 12: UE log showing successful contention resolution, reception of RRCSetup, the state change to NR_RRC_CONNECTED, and generation of RRCSetupComplete.*
 
 **Answers:**
 
-**1. In log order, what are the three events from successful Random Access to generating RRCSetupComplete?**
-
-The three main stages are:
-
-1. The four-step Random Access procedure succeeds, including contention resolution.
-2. The UE receives RRCSetup and transitions to `NR_RRC_CONNECTED`.
-3. The UE generates RRCSetupComplete to confirm the RRC setup transaction.
-
-The relevant events appear in log lines 87, 88, 90 and 93.
-
-**2. What do 4-Step RA procedure succeeded and State = NR_RRC_CONNECTED each prove?**
-
-`4-Step RA procedure succeeded` confirms that the contention-based Random Access procedure has been completed successfully.
-
-`State = NR_RRC_CONNECTED` confirms that the UE's RRC state machine has entered the connected state.
-
-However, this does not by itself demonstrate successful NAS registration or PDU Session Establishment in the 5G Core.
-
----
+1. The log reports three major stages in order: **(i)** successful four-step Random Access, **(ii)** reception of RRCSetup and transition to `NR_RRC_CONNECTED`, and **(iii)** generation of RRCSetupComplete. The precise event order in the log is lines 87, 88, 90, and 93.
+2. `4-Step RA procedure succeeded` proves successful Random Access and MAC contention resolution. `State = NR_RRC_CONNECTED` proves that the UE's RRC state machine entered RRC_CONNECTED. It does **not** by itself demonstrate NAS registration or PDU Session Establishment.
 
 ### Task 3: Draw an Initial Access MSC Diagram — 25 points
 
@@ -535,44 +396,20 @@ Determine and draw the correct order and direction of the messages yourself. Add
 
 ![Initial Access Message Sequence Chart](images/task3-initial-access-msc.png)
 
-*Figure 13: Initial Access Message Sequence Chart with UE and gNB lifelines, showing the order, direction and purpose of the messages from system information acquisition to RRC_CONNECTED.*
+*Figure 13: Initial Access Message Sequence Chart reconstructed from the UE/gNB logs and the Wireshark trace. The two lifelines are UE and gNB; each arrow identifies the direction and purpose of one required message.*
 
-### Message sequence and purpose
+**Sequence and purpose:**
 
-| Order | Message | Direction | Purpose |
-|---:|---|---|---|
-| 1 | MIB / SIB1 | gNB → UE | Broadcast system information and common access configuration. |
-| 2 | Msg1 PRACH | UE → gNB | Initiate Random Access by transmitting a selected preamble. |
-| 3 | Msg2 RAR | gNB → UE | Provide timing advance, uplink grant and Temporary C-RNTI. |
-| 4 | Msg3 RRCSetupRequest | UE → gNB | Request establishment of an RRC connection. |
-| 5 | Msg4 RRCSetup + Contention Resolution | gNB → UE | Resolve contention and provide RRC connection configuration. |
-| 6 | RRCSetupComplete | UE → gNB | Confirm completion of the RRC setup transaction. |
+| Order | Message | Direction | Purpose | Evidence |
+|---:|---|---|---|---|
+| 1 | MIB / SIB1 | gNB → UE | Broadcast essential cell and access configuration. | PCAP frames 2 / 1 |
+| 2 | Msg1 PRACH | UE → gNB | Send a contention-based Random Access preamble. | UE log line 81; trace frame 489 |
+| 3 | Msg2 RAR | gNB → UE | Provide the uplink grant, timing advance and temporary identifier. | Frame 490 |
+| 4 | Msg3 RRCSetupRequest | UE → gNB | Request an RRC connection. | Frame 491 |
+| 5 | Msg4 RRCSetup + Contention Resolution | gNB → UE | Resolve contention and provide RRC configuration. | Frame 492 |
+| 6 | RRCSetupComplete | UE → gNB | Confirm RRC setup with matching transaction ID. | Frame 498 |
 
-### Experimental evidence
-
-| Message | Evidence |
-|---|---|
-| MIB | Wireshark frame 2 |
-| SIB1 | Wireshark frame 1 |
-| Msg1 PRACH | UE log line 81; Wireshark frame 489 |
-| Msg2 RAR | Wireshark frame 490 |
-| Msg3 RRCSetupRequest | Wireshark frame 491 |
-| Msg4 RRCSetup | Wireshark frame 492 |
-| RRCSetupComplete | Wireshark frame 498 |
-
-### UE state transition
-
-The UE starts in `RRC_IDLE` during initial access.
-
-It first synchronizes with the gNB and obtains broadcast system information.
-
-After successfully completing Random Access and receiving RRCSetup, the UE enters `RRC_CONNECTED`.
-
-The UE then generates RRCSetupComplete to confirm the configuration transaction.
-
-The UE log explicitly reports `State = NR_RRC_CONNECTED` at line 90.
-
-RRC connection establishment must be distinguished from 5GC Registration, which is a separate NAS procedure.
+**State transition:** The UE starts in `RRC_IDLE` during initial access and reaches `RRC_CONNECTED` after the RRC setup procedure. The log explicitly reports the connected state at line 90. This RRC state does not itself prove completion of 5GC NAS registration.
 
 | Item | Points |
 |---|---:|
